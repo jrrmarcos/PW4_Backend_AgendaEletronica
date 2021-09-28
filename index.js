@@ -6,8 +6,8 @@ app.use(express.urlencoded({extended: true}));
 
 consign()
     .include('./configuracao/passport.js')
-    .then('./configuracao/middlewares.js')
-    .then('./configuracao/auth.js')
+    .then('./configuracao/middleware.js')
+    .then('./configuracao/autenticacao.js')
     .then('./rotas/rotas.js')
     .into(app)
 

@@ -1,4 +1,4 @@
-const {body, validacaoResultado} = require("express-validator");
+const {body, validationResult} = require("express-validator");
 const {read} = require("fs");
 const { isModuleNamespaceObject } = require("util/types");
 const banco = require("../bancoDeDados/conexao");
@@ -7,146 +7,42 @@ module.exports = app => {
 
     //HOME
     app.route("/").get((req,res) => {
-    res.send(`<!DOCTYPE html>
-              <html lang="PT_BR">
-              
-              <head>
-                <meta charset="UTF-8">
-                <title>Agenda Eletrônica</title>
-              </head>
-              
-              <body>
-                <h1>Agenda Eletrônica</h1>
-                <form method=post action=#>
-                    <p>Login:<input type=text name=login/></p>
-                    <p>Senha:<input type=password name=senha/></p>
-                    
-                    <p> <input type=submit name="Login"/></p>
-                    <p><a href="/cadastrarUsuario">Cadastre-se</a></p>
-                </form>
-              </body>
-              </html>`);
+    res.send();
     });
 
     //ACESSA A PÁGINA INICIAL DA AGENDA
     app.route("/agendaInicio").
-    all(app.configuracaouracao.passport.authenticate())
+    all(app.configuracao.passport.authenticate())
     .post((req, res) => {
-        res.send(`<!DOCTYPE html>
-                  <html lang="PT_BR">
-                  <head>
-                    <meta charset="UTF-8">
-                    <title>Bem vindo a sua agenda eletrônica</title>
-                  </head>
-                  <body>
-                    <p>Bem vindo! | <a href=logout>Sair</a></p>
-                    <h1>Menu Principal</h1>
-                    <p><a href=meusContatos>Meus Contatos</a></p>
-                    <p><a href=meusCompromissos>Meus Compromissos</a></p>
-                    <hr>
-                    <p><a href=novoContato>Adicionar Contato</a></p>
-                    <p><a href=novoCompromisso>Adicionar Compromisso</a></p>
-                  </body>
-                 </html>`);  
+        res.send();  
     });
 
 
     //CADASTRAR USUÁRIO
     app.route("/cadastrarUsuario")
         .get((req,res) => {
-            res.send(`<!DOCTYPE html>
-            <html lang="PT_BR">
-            
-            <head>
-              <meta charset="UTF-8">
-              <title>Agenda Eletrônica</title>
-            </head>
-            
-            <body>
-              <h1>Cadastro de Usuário</h1>
-              <form method=post action=#>
-                  <p>Login:<input type=text name=login/></p>
-                  <p>Senha:<input type=password name=senha/></p>
-                  
-                  <p> <input type=submit name="Enviar"/></p>
-              </form>
-            </body>
-            </html>`);
+            res.send();
     });
 
     //CADASTRAR NOVO CONTATO
     app.route("/novoContato")
-        .all(app.configuracaouracao.passport.authenticate())
+        .all(app.configuracao.passport.authenticate())
         .get((req,res) => {
-            res.send(`<!DOCTYPE html>
-                      <html lang="PT-BR">
-                      <head>
-                        <meta charset="UTF-8">
-                        <title>Novo Contato</title>
-                      </head>
-                      <body>
-                        <p>Bem vindo! | <a href=agendaInicio>Voltar</a> | <a href=logout>Sair</a><p>
-                        <h1>Novo contato</h1>
-                        <form method=post action=adicionarContato>
-                            <p>Nome: <input type=text name=name/></p> 
-                            <p>Endereço: <input type=text name=endereco/></p>  
-                            <p>Telefone: <input type=text name=telefone/></p> 
-                            <p>E-mail: <input type=text name=email/></p> 
-                           
-                            <p><input type=submit value="Enviar"></p> 
-                        </form>
-                      </body>
-                      </html>`);
+            res.send();
         });
 
         //CADASTRAR NOVO COMPROMISSO
         app.route("/novoCompromisso")
-        .all(app.configuracaouracao.passport.authenticate())
+        .all(app.configuracao.passport.authenticate())
         .get((req, res) => {
-            res.send(`<!DOCTYPE html>
-                      <html lang="PT_BR">
-                      <head>
-                        <meta charset="UTF-8">
-                        <title>Novo Compromisso</title>
-                      </head>
-                      <body>
-                        <p>Bem vindo! | <a href=agendaInicio>Voltar</a> | <a href=logout>Sair</a><p>
-                        <h1>Novo Compromisso</h1>
-                        <form method=post action=adicionarCompromisso>
-                            <p>Local: <input type=text name=local/></p> 
-                            <p>Data: <input type=date name=data/></p>  
-                            <p>Contato: <input type=text name=contato/></p> 
-                            <p>Descrição: <input type=text width="230" height="120" name=descricao/></p> 
-                            
-                            <p><input type=submit value="Enviar"></p> 
-                    </form>
-                </body>
-                </html>
-            `);
+            res.send();
     });
 
     //SAIR
     app.route("/sair")
     .all(app.configuracao.passport.authenticate())
     .get((req, res) => {
-        res.send(`<!DOCTYPE html>
-                  <html lang="PT_BR">
-                  <head>
-                    <meta charset="UTF-8">
-                    <title>Bem vindo!</title>
-                  </head>
-                  <body>
-                    <p>Até a próxima!</p>
-                    <h1>Agenda Eletrônica</h1>
-                    <form method=post action=#>
-                        <p>Login:<input type=text name=login/></p> 
-                        <p>Senha:<input type=password name=senha/></p> 
-                        <p><input type=submit value="Login"></p> 
-                        <p><a href="/cadastrarUsuario">Cadastre-se</a></p>
-                </form>
-            </body>
-            </html>
-        `);
+        res.send();
     });
 
     //LOGIN
@@ -163,7 +59,7 @@ module.exports = app => {
         body("admin").trim(),
     ],
     async (req, res) => {
-        const erro = validacaoResultado(req);
+        const erro = validationResult(req);
         if (!erro.isEmpty()) {
             res.send(erro.array())
         } else {
@@ -184,7 +80,7 @@ module.exports = app => {
         body("id", "*Campo obrigatório").trim().isLength({min:1}),],
     
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
             if (!erro.isEmpty()) {
                 res.send(erro.array())
             } else {
@@ -203,7 +99,7 @@ module.exports = app => {
             body("senha", "A senha precisa ter entre 6 e 8 caracteres").trim().isLength({min:6,max:8}),
             body("admin").trim(),],
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
             if (!erro.isEmpty()) {
                 res.send(erro.array())
             } else {
@@ -248,7 +144,7 @@ module.exports = app => {
             body("endereco").trim(),
             body("contato_id").trim().isLength({min:1}),],
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
 
             if (!erro.isEmpty()) {
                 res.send(erro.array())
@@ -271,7 +167,7 @@ module.exports = app => {
             body("id", "*Campo obrigatório").trim().isLength({min:1}),],
 
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
             
             if (!erro.isEmpty()) {
                 res.send(erro.array())
@@ -292,7 +188,7 @@ module.exports = app => {
             body("contatos_id").trim().isLength({min:1}),],
         
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
             
             if (!erro.isEmpty()) {
                 res.send(erro.array())
@@ -343,7 +239,7 @@ module.exports = app => {
             body("status").trim(),
             body("contato_id").trim().isLength({min:1}),],
     async (req, res) => {
-        const erro = validacaoResultado(req);
+        const erro = validationResult(req);
         
         if (!erro.isEmpty()) {
             res.send(erro.array())
@@ -367,7 +263,7 @@ module.exports = app => {
             body("id", "*Campo obrigatório").trim().isLength({ min:1}),],
     
         async (req, res) => {
-            const erro = validacaoResultado(req);
+            const erro = validationResult(req);
                 
             if (!erro.isEmpty()) {
                 res.send(erro.array())
@@ -389,7 +285,7 @@ module.exports = app => {
             body("status").trim(),
             body("contato_id").trim().isLength({min:1}),],
         async (req, res) => {
-        const erro = validacaoResultado(req);
+        const erro = validationResult(req);
         
         if (!erro.isEmpty()) {
             res.send(erro.array())

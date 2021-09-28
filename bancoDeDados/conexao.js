@@ -1,6 +1,6 @@
 //CRIANDO CONEXÃO
 async function conecta(){
-    const banco = require("mysql/promise");
+    const banco = require("mysql2/promise");
     const con = await banco.createConnection({
         host:"localhost",
         port:3306,
