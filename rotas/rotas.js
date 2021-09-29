@@ -1,6 +1,5 @@
 const {body, validationResult} = require("express-validator");
 const {read} = require("fs");
-const { isModuleNamespaceObject } = require("util/types");
 const banco = require("../bancoDeDados/conexao");
 
 module.exports = app => {
@@ -8,41 +7,6 @@ module.exports = app => {
     //HOME
     app.route("/").get((req,res) => {
     res.send();
-    });
-
-    //ACESSA A PÁGINA INICIAL DA AGENDA
-    app.route("/agendaInicio").
-    all(app.configuracao.passport.authenticate())
-    .post((req, res) => {
-        res.send();  
-    });
-
-
-    //CADASTRAR USUÁRIO
-    app.route("/cadastrarUsuario")
-        .get((req,res) => {
-            res.send();
-    });
-
-    //CADASTRAR NOVO CONTATO
-    app.route("/novoContato")
-        .all(app.configuracao.passport.authenticate())
-        .get((req,res) => {
-            res.send();
-        });
-
-        //CADASTRAR NOVO COMPROMISSO
-        app.route("/novoCompromisso")
-        .all(app.configuracao.passport.authenticate())
-        .get((req, res) => {
-            res.send();
-    });
-
-    //SAIR
-    app.route("/sair")
-    .all(app.configuracao.passport.authenticate())
-    .get((req, res) => {
-        res.send();
     });
 
     //LOGIN
@@ -74,24 +38,21 @@ module.exports = app => {
     });
 
     //EXCLUINDO USUÁRIO
-    app.route("/excluirUsuario")
+    app.route("/excluirUsuario/:id?")
         .all(app.configuracao.passport.authenticate())
-        .delete([
-        body("id", "*Campo obrigatório").trim().isLength({min:1}),],
-    
-        async (req, res) => {
-            const erro = validationResult(req);
-            if (!erro.isEmpty()) {
-                res.send(erro.array())
-            } else {
-                const resultado = await banco.excluirUsuario(req.body.id);
+        .delete(async (req, res) => {
+        if (req.params.id) {
+            const resultado = await banco.excluirUsuario(req.params.id);
+            if(resultado=="Id inexistente!"){
+                res.status(400).send("Id inexistente!")
+            }else {
                 res.send(resultado);
-        }
+            }
+        } 
     });
 
     //ALTERANDO USUÁRIO
     app.route("/alterarUsuario")
-        .all(app.configuracao.passport.authenticate())
         .all(app.configuracao.passport.authenticate())
         .put([
             body("id", "*Campo obrigatório").trim().isLength({ min: 1 }),
@@ -161,31 +122,27 @@ module.exports = app => {
     });
 
     //EXCLUIR CONTATO
-    app.route("/excluirContato")
+    app.route("/excluirContato/:id?")
         .all(app.configuracao.passport.authenticate())
-        .delete([
-            body("id", "*Campo obrigatório").trim().isLength({min:1}),],
-
-        async (req, res) => {
-            const erro = validationResult(req);
-            
-            if (!erro.isEmpty()) {
-                res.send(erro.array())
-            } else {
-                const resultado = await banco.excluirContato(req.body.id);
+        .delete(async (req, res) => {
+        if (req.params.id) {
+            const resultado = await banco.excluirContato(req.params.id);
+            if(resultado=="Id inexistente!"){
+                res.status(400).send("Id inexistente!")
+            }else {
                 res.send(resultado);
             }
-        });
+        } 
+    });
 
     //ALTERAR CONTATO
     app.route("/alterarContato")
         .all(app.configuracao.passport.authenticate())
         .put([
-            body("id", "*Campo obrigatório").trim().isLength({min:1}),
             body("nome", "*Campo obrigatório").trim().isLength({min:2,max:100}),
             body("telefone").trim(),
             body("endereco").trim(),
-            body("contatos_id").trim().isLength({min:1}),],
+            body("contato_id").trim().isLength({min:1}),],
         
         async (req, res) => {
             const erro = validationResult(req);
@@ -194,7 +151,6 @@ module.exports = app => {
                 res.send(erro.array())
             } else {
                 const resultado = await banco.alterarContato({
-                    id: req.body.id,
                     nome: req.body.nome,
                     email: req.body.email,
                     telefone: req.body.telefone,
@@ -209,7 +165,7 @@ module.exports = app => {
     app.route("/listarContatos")
         .all(app.configuracao.passport.authenticate())
         .get(async (req, res) => {
-        const resultado = await banco.listarUsuarios();
+        const resultado = await banco.listarContatos();
         res.send(resultado);
     });
 
@@ -232,7 +188,7 @@ module.exports = app => {
     app.route("/inserirCompromisso")
         .all(app.configuracao.passport.authenticate())
         .post([
-            body("data", "*Campo obrigatório").trim().isLength({ min: 19 }), //'2000-12-12 00:00:00'
+            body("data", "*Campo obrigatório").trim().isLength({ min: 19 }), 
             body("obs").trim(),
             body("participantes").trim(),
             body("endereco").trim(),
@@ -257,20 +213,17 @@ module.exports = app => {
     });
 
     //EXCLUI COMPROMISSO
-    app.route("/excluirCompromisso")
+    app.route("/excluirCompromisso/:id?")
         .all(app.configuracao.passport.authenticate())
-        .delete([
-            body("id", "*Campo obrigatório").trim().isLength({ min:1}),],
-    
-        async (req, res) => {
-            const erro = validationResult(req);
-                
-            if (!erro.isEmpty()) {
-                res.send(erro.array())
-            } else {
-                const resultado = await banco.excluirCompromisso(req.body.id);
+        .delete(async (req, res) => {
+        if (req.params.id) {
+            const resultado = await banco.excluirCompromisso(req.params.id);
+            if(resultado=="Id inexistente!"){
+                res.status(400).send("Id inexistente!")
+            }else {
                 res.send(resultado);
             }
+        } 
     });
 
     //ALTERAR COMPROMISSO
@@ -283,7 +236,8 @@ module.exports = app => {
             body("participantes").trim(),
             body("endereco").trim(),
             body("status").trim(),
-            body("contato_id").trim().isLength({min:1}),],
+            body("contato_id").trim().isLength({min:1}),
+        ],
         async (req, res) => {
         const erro = validationResult(req);
         
@@ -297,23 +251,18 @@ module.exports = app => {
                 participantes: req.body.participantes,
                 endereco: req.body.endereco,
                 status: req.body.status,
-                user_id: req.body.user_id,
+                contato_id: req.body.contato_id,
             });
             res.send(resultado);
         }
     });
 
     //LISTAR TODOS COMPROMISSOS
-        app.route("/meusCompromissos/:id?")
+        app.route("/listarCompromissos")
         .all(app.configuracao.passport.authenticate())
         .get(async (req, res) => {
-    
-        if (req.params.id) {
-            const resultado = await banco.listarCompromissos(req.params.id);
-            res.send(resultado);
-        } else {
-            res.send("Favor informar um id de usuário válida!")
-        }
+        const resultado = await banco.listarCompromissos();
+        res.send(resultado);
     });
 
     //LISTAR UM COMPROMISSO

@@ -1,3 +1,7 @@
+CREATE DATABASE agendaEletronica; 
+
+USE agendaEletronica; 
+
 CREATE TABLE `usuario` (
   `id` int(10) AUTO_INCREMENT,
   `nome` varchar(100) DEFAULT NULL,
@@ -25,7 +29,7 @@ CREATE TABLE `compromisso` (
   `participantes` text DEFAULT NULL,
   `endereco` varchar(200) DEFAULT NULL,  
   `status` varchar(50) DEFAULT NULL,
-  `user_id` int(10) NOT NULL,
+  `contato_id` int(10) NOT NULL,
   CONSTRAINT compromisso_pk primary key (id),
   CONSTRAINT `compromisso_contatoid_fk` FOREIGN KEY (`contato_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

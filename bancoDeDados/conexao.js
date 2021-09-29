@@ -17,7 +17,7 @@ async function conecta(){
 async function login(usuario){
     console.log("Validando login...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario WHERE login = ?;", [usuario.login]);
+    const[resultado] = await conexao.query("SELECT * FROM usuario WHERE login = ?;", [usuario.login]);
     return resultado[0];
 }
 
@@ -25,14 +25,14 @@ async function login(usuario){
 async function inserirUsuario(usuario){
     console.log("Inserindo usuário...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario WHERE login =?;", [usuario.login]);
+    const[resultado] = await conexao.query("SELECT * FROM usuario WHERE login =?;", [usuario.login]);
     
-    if(retorna.length>0){
+    if(resultado.length>0){
         return "Login previamente cadastrado!"
     }
 
-    const sql = "INSERT INTO usuario(nome,login,senha,adm) VALUES (?,?,?,?)";
-    const param = [usuario.nome, usuario.login, usuario.senha, usuario.adm];
+    const sql = "INSERT INTO usuario(nome,login,senha,admin) VALUES (?,?,?,?)";
+    const param = [usuario.nome, usuario.login, usuario.senha, usuario.admin];
     return await conexao.query(sql,param);
 }
 
@@ -40,14 +40,14 @@ async function inserirUsuario(usuario){
 async function alterarUsuario(usuario){
     console.log("Alterando usuário...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario WHERE id=?;",[usuario.id]);
+    const[resultado] = await conexao.query("SELECT * FROM usuario WHERE id=?;",[usuario.id]);
 
-    if (retorna.length==0){
+    if (resultado.length==0){
         return "Id Inexistente!"
     }
 
-    const sql = "UPDATE usuario SET nome=?, senha=?, adm=? WHERE id=?;";
-    const param = [usuario.nome, usuario.senha, usuario.adm, usuario.id];
+    const sql = "UPDATE usuario SET nome=?, senha=?, admin=? WHERE id=?;";
+    const param = [usuario.nome, usuario.senha, usuario.admin, usuario.id];
     return await conexao.query(sql,param);
 }
 
@@ -55,9 +55,9 @@ async function alterarUsuario(usuario){
 async function excluirUsuario(id){
     console.log("Excluindo usuário...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario WHERE id=?;", [id]);
+    const[resultado] = await conexao.query("SELECT * FROM usuario WHERE id=?;", [id]);
 
-    if(retorna.length==0){
+    if(resultado.length==0){
         return "Id inexistente!"
     }
 
@@ -68,20 +68,22 @@ async function excluirUsuario(id){
 async function listarUsuarios(){
     console.log("Listando usuários...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario");
+    const[resultado] = await conexao.query("SELECT * FROM usuario");
+    return resultado; 
 }
 
 //LISTA UM USUÁRIO
 async function listarUmUsuario(id){
     console.log("Listando usuário...");
-    const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM usuario WHERE id=?;",[id]);
 
-    if(retorna.length==0){
+    const conexao = await conecta();
+    const[resultado] = await conexao.query("SELECT * FROM usuario WHERE id=?;",[id]);
+
+    if(resultado.length==0){
         return "Id Inexistente!"
     }
 
-    return retorna[0];
+    return resultado[0];
 }
 
 //<><><><><><><><><><><><><><><> SEÇÃO CONTATO <><><><><><><><><><><><><><><><><><>
@@ -99,9 +101,9 @@ async function inserirContato(contato){
 async function alterarContato(contato){
     console.log("Alterando contato...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM contato WHERE contato_id=?;",[contato.contato_id]);
+    const[resultado] = await conexao.query("SELECT * FROM contato WHERE contato_id=?;",[contato.contato_id]);
 
-    if (retorna.length==0){
+    if (resultado.length==0){
         return "Id Inexistente!"
     }
 
@@ -114,33 +116,34 @@ async function alterarContato(contato){
 async function excluirContato(id){
     console.log("Excluindo contato...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM contato WHERE contato_id=?;", [contato.contato_id]);
+    const[resultado] = await conexao.query("SELECT * FROM contato WHERE contato_id=?;", [id]);
 
-    if(retorna.length==0){
+    if(resultado.length==0){
         return "Id inexistente!"
     }
 
-    return await conexao.query("DELETE FROM contato WHERE id=?",[contato.contato_id]);
+    return await conexao.query("DELETE FROM contato WHERE id=?",[id]);
 }
 
 //LISTAR TODOS
 async function listarContatos(){
     console.log("Listando contatos...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM contato");
+    const[resultado] = await conexao.query("SELECT * FROM contato");
+    return resultado; 
 }
 
 //LISTA UM CONTATO
 async function listarUmContato(id){
     console.log("Listando contato...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM contato WHERE contato_id=?;",[contato.contato_id]);
+    const[resultado] = await conexao.query("SELECT * FROM contato WHERE id=?;",[id]);
 
-    if(retorna.length==0){
+    if(resultado.length==0){
         return "Id Inexistente!"
     }
 
-    return retorna[0];
+    return resultado[0];
 }
 
 //<><><><><><><><><><><><><><><> SEÇÃO COMPROMISSO <><><><><><><><><><><><><><><><><><>
@@ -158,14 +161,14 @@ async function inserirCompromisso(compromisso){
 async function alterarCompromisso(compromisso){
     console.log("Alterando compromisso...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM compromisso WHERE id=?;",[compromisso.id]);
+    const[resultado] = await conexao.query("SELECT * FROM compromisso WHERE id=?;",[compromisso.id]);
 
-    if (retorna.length==0){
+    if (resultado.length==0){
         return "Id Inexistente!"
     }
 
-    const sql = "UPDATE compromisso SET data = ?, observacao = ?, participantes = ?, endereco = ?,  status = ?, contato_id = ? WHERE id = ?;";
-    const param = [compromisso.data, compromisso.observacao, compromisso.participantes, compromisso.endereco, compromisso.status, compromisso.contato_id];
+    const sql = "UPDATE compromisso SET data=?, observacao=?, participantes=?, endereco=?,  status=?, contato_id=? WHERE id=?;";
+    const param = [compromisso.data, compromisso.observacao, compromisso.participantes, compromisso.endereco, compromisso.status, compromisso.contato_id, compromisso.id];
     return await conexao.query(sql,param);
 }
 
@@ -173,9 +176,9 @@ async function alterarCompromisso(compromisso){
 async function excluirCompromisso(id){
     console.log("Excluindo compromisso...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM compromisso WHERE id=?;", [id]);
+    const[resultado] = await conexao.query("SELECT * FROM compromisso WHERE id=?;", [id]);
 
-    if(retorna.length==0){
+    if(resultado.length==0){
         return "Id inexistente!"
     }
 
@@ -184,22 +187,23 @@ async function excluirCompromisso(id){
 
 //LISTAR TODOS
 async function listarCompromissos(){
-    console.log("Listando compromisso...");
+    console.log("Listando compromissos...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM compromisso");
+    const[resultado] = await conexao.query("SELECT * FROM compromisso");
+    return resultado;
 }
 
 //LISTA UM COMPROMISSO
 async function listarUmCompromisso(id){
     console.log("Listando compromisso...");
     const conexao = await conecta();
-    const[retorna] = await conexao.query("SELECT * FROM compromisso WHERE contato_id=?;",[id]);
+    const[resultado] = await conexao.query("SELECT * FROM compromisso WHERE contato_id=?;",[id]);
 
-    if(retorna.length==0){
+    if(resultado.length==0){
         return "Id Inexistente!"
     }
 
-    return retorna[0];
+    return resultado;
 }
 
 module.exports = { login,

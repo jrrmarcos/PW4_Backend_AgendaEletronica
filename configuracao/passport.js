@@ -10,11 +10,12 @@ module.exports = app => {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     }
 
-    const strategy = new Strategy(params, (payload, done) => {        
-        const user = banco.selecionaUsuario({
+    const strategy = new Strategy(params, (payload, done) => {      
+       
+        const user = banco.listarUmUsuario({
             id: payload.id,
         });
-
+        
         if (user != 'Id Inexistente!') {
             return done(null, { ...payload })
         } else{ 
